@@ -1,14 +1,14 @@
-/* RC Race Results Generator - Main Script */
+/* RCレース結果ジェネレーター - メインスクリプト */
 
-// Reference: https://ribbit.konomi.app/blog/javascript-drag-and-drop/
-// Get drag & drop area
+// 参考: https://ribbit.konomi.app/blog/javascript-drag-and-drop/
+// ドラッグ＆ドロップエリアを取得
 const dropArea = document.body;
 const dropZone = document.getElementById('dropArea');
 
-// Drag and drop event listeners
+// ドラッグ＆ドロップのイベントリスナー
 dropArea.addEventListener('dragover', (event) => {
-    event.preventDefault(); // Prevent browser from opening the dragged file
-    event.dataTransfer.dropEffect = 'copy'; // Change file display while dragging
+    event.preventDefault(); // ブラウザがドラッグしたファイルを開くのを防ぐ
+    event.dataTransfer.dropEffect = 'copy'; // ドラッグ中のファイル表示を変更
     if (dropZone) {
         dropZone.classList.add('dragover');
     }
@@ -21,7 +21,7 @@ dropArea.addEventListener('dragleave', (event) => {
 });
 
 dropArea.addEventListener('drop', (event) => {
-    event.preventDefault(); // Prevent browser from opening the dragged file
+    event.preventDefault(); // ブラウザがドラッグしたファイルを開くのを防ぐ
     if (dropZone) {
         dropZone.classList.remove('dragover');
     }
@@ -29,28 +29,28 @@ dropArea.addEventListener('drop', (event) => {
     getFiles(files);
 });
 
-// File reading function
+// ファイル読み込み関数
 const getFiles = (files) => {
     if (files.length === 0) return;
     
-    // Display file count
+    // ファイル数を表示
     const fileCount = files.length;
     const dropArea = document.getElementById('dropArea');
     if (dropArea) {
         dropArea.innerHTML = `
-            <div class="drop-text">✅ Loading ${fileCount} file(s)...</div>
-            <div class="drop-subtext">Please wait</div>
+            <div class="drop-text">✅ ${fileCount}個のファイルを読み込み中...</div>
+            <div class="drop-subtext">しばらくお待ちください</div>
         `;
     }
     
     let loadedCount = 0;
     for (const file of files) {
         const reader = new FileReader();
-        // Try reading with Shift_JIS first
+        // 最初にShift_JISで読み込みを試行
         reader.readAsText(file, 'shift-jis');
         reader.onload = (event) => {
             let text = event.target.result;
-            // Try UTF-8 if Shift_JIS fails
+            // Shift_JISで失敗した場合はUTF-8を試行
             if (text.indexOf('ARC4 Manager Race Data') !== 0 && text.indexOf('ARC4 Manager User List') !== 0) {
                 const reader2 = new FileReader();
                 reader2.readAsText(file, 'utf-8');
@@ -61,11 +61,11 @@ const getFiles = (files) => {
                     }
                     loadedCount++;
                     
-                    // Update message when all files are loaded
+                    // 全ファイル読み込み完了時にメッセージを更新
                     if (loadedCount === files.length && dropArea) {
                         dropArea.innerHTML = `
-                            <div class="drop-text">✅ ${fileCount} file(s) loaded successfully</div>
-                            <div class="drop-subtext">Press calculation button to display results</div>
+                            <div class="drop-text">✅ ${fileCount}個のファイルを正常に読み込みました</div>
+                            <div class="drop-subtext">集計ボタンを押して結果を表示してください</div>
                         `;
                     }
                 };
@@ -77,11 +77,11 @@ const getFiles = (files) => {
             }
             loadedCount++;
             
-            // Update message when all files are loaded
+            // 全ファイル読み込み完了時にメッセージを更新
             if (loadedCount === files.length && dropArea) {
                 dropArea.innerHTML = `
-                    <div class="drop-text">✅ ${fileCount} file(s) loaded successfully</div>
-                    <div class="drop-subtext">Press calculation button to display results</div>
+                    <div class="drop-text">✅ ${fileCount}個のファイルを正常に読み込みました</div>
+                    <div class="drop-subtext">集計ボタンを押して結果を表示してください</div>
                 `;
             }
         };
@@ -89,80 +89,80 @@ const getFiles = (files) => {
             loadedCount++;
             if (loadedCount === files.length && dropArea) {
                 dropArea.innerHTML = `
-                    <div class="drop-text">⚠️ File loading error</div>
-                    <div class="drop-subtext">Please drop the file again</div>
+                    <div class="drop-text">⚠️ ファイル読み込みエラー</div>
+                    <div class="drop-subtext">もう一度ファイルをドロップしてください</div>
                 `;
             }
         };
     }
 };
 
-// Toggle print/input display
+// 印刷/入力表示の切り替え
 function switchDisplay(num) {
     let inputArea = document.getElementsByClassName("inputArea")[0];
     let btn = document.getElementById('btn');
     if (inputArea.style.display === 'none' || num == 1) {
         inputArea.style.display = 'block';
-        btn.innerHTML = '📊 Switch to Print View';
+        btn.innerHTML = '📊 印刷用表示に切り替える';
     } else {
         inputArea.style.display = 'none';
-        btn.innerHTML = '📝 Back to Input View';
+        btn.innerHTML = '📝 入力画面に戻る';
     }
 }
 
-// Clear all data
+// 全データをクリア
 function clear1() {
     document.getElementById('ta').value = '';
     document.getElementById('table1').innerHTML = '';
     
-    // Hide X post button
+    // X投稿ボタンを非表示
     const postBtn = document.getElementById('postToXBtn');
     if (postBtn) {
         postBtn.style.display = 'none';
     }
     
-    // Hide image save button
+    // 画像保存ボタンを非表示
     const imageBtn = document.getElementById('generateImageBtn');
     if (imageBtn) {
         imageBtn.style.display = 'none';
     }
     
-    // Clear race results data
+    // レース結果データをクリア
     currentRaceResults = null;
     
-    // Reset drop area
+    // ドロップエリアをリセット
     const dropArea = document.getElementById('dropArea');
     if (dropArea) {
         dropArea.innerHTML = `
-            <div class="drop-text">📁 Drag & Drop Files Here</div>
-            <div class="drop-subtext">Drop ARC4 Manager result files (.csv or .arc4)</div>
-            <div class="drop-subtext">Multiple files can be dropped at once</div>
+            <div class="drop-text">📁 ここにファイルをドラッグ＆ドロップ</div>
+            <div class="drop-subtext">ARC4 Managerの結果ファイル (.csv または .arc4) を放り込んでください</div>
+            <div class="drop-subtext">複数ファイルを一度にドロップすることも可能です</div>
         `;
     }
     
     switchDisplay(1);
 }
 
-// Post to X (Twitter)
+// X（Twitter）に投稿
 function postToX() {
     if (!currentRaceResults) {
-        alert('No result data to post. Please run calculation first.');
+        alert('投稿するデータがありません。先に集計を実行してください。');
         return;
     }
     
     const results = currentRaceResults;
     let tweetText = '';
     
-    // Header information
+    // ヘッダー情報
     tweetText += `🏁 ${results.title}\n`;
     
     if (results.mode == 1) {
-        tweetText += `⚡ Best Lap ${results.style} Start\n\n`;
+        tweetText += `⚡ ベストラップ ${results.style} スタート\n\n`;
     } else {
-        tweetText += `🏃 Lap Race ${results.style} Start\n\n`;
+        tweetText += `🏃 周回レース ${results.style} スタート\n\n`;
     }
     
-    // Display top 3 positions
+    // 上位3位まで表示
     let displayCount = 0;
     for (let i = 0; i < results.data.length && displayCount < 3; i++) {
         if (results.data[i][4] == "") continue;
@@ -176,55 +176,55 @@ function postToX() {
         else if (pos === 3) posEmoji = '🥉';
         
         if (results.mode == 1) {
-            // Best lap mode
+            // ベストラップモード
             const bestTime = results.data[i][7];
             if (bestTime != 999999) {
-                tweetText += `${posEmoji}${pos}: ${name} ${msecToSec(bestTime)}\n`;
+                tweetText += `${posEmoji}${pos}位: ${name} ${msecToSec(bestTime)}\n`;
             } else {
-                tweetText += `${posEmoji}${pos}: ${name} -\n`;
+                tweetText += `${posEmoji}${pos}位: ${name} -\n`;
             }
         } else {
-            // Lap race mode
+            // 周回レースモード
             const laps = results.data[i][4];
             const goalTime = results.data[i][5];
-            tweetText += `${posEmoji}${pos}: ${name} ${laps} laps ${msecToMin(goalTime)}\n`;
+            tweetText += `${posEmoji}${pos}位: ${name} ${laps}周 ${msecToMin(goalTime)}\n`;
         }
         displayCount++;
     }
     
-    // Add hashtag
-    tweetText += '\n#RCRacing';
+    // ハッシュタグを追加
+    tweetText += '\n#RCレース';
     
-    // Character limit check (280 characters)
+    // 文字数制限チェック（280文字）
     if (tweetText.length > 270) {
-        tweetText = tweetText.substring(0, 250) + '...\n\n#RCRacing';
+        tweetText = tweetText.substring(0, 250) + '...\n\n#RCレース';
     }
     
-    // Create X Web Intent URL
+    // X Web Intent URLを作成
     const tweetUrl = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(tweetText);
     
-    // Open X in new window
+    // Xを新しいウィンドウで開く
     window.open(tweetUrl, '_blank', 'width=550,height=420');
 }
 
-// Generate and save image
+// 画像を生成して保存
 function generateImage() {
     const table = document.getElementById('table1');
     if (!table || !table.innerHTML) {
-        alert('Please run calculation first.');
+        alert('先に集計を実行してください。');
         return;
     }
     
-    // Show progress
+    // 進行状況を表示
     const imageBtn = document.getElementById('generateImageBtn');
     const originalText = imageBtn.innerHTML;
-    imageBtn.innerHTML = '📷 Generating image...';
+    imageBtn.innerHTML = '📷 画像生成中...';
     imageBtn.disabled = true;
     
-    // html2canvas options
+    // html2canvasオプション
     const options = {
         backgroundColor: '#ffffff',
-        scale: 2, // High resolution
+        scale: 2, // 高解像度
         useCORS: true,
         allowTaint: false,
         scrollX: 0,
@@ -232,7 +232,7 @@ function generateImage() {
         width: table.offsetWidth,
         height: table.offsetHeight,
         onclone: function(clonedDoc) {
-            // Adjust cloned element styles
+            // クローンした要素のスタイルを調整
             const clonedTable = clonedDoc.getElementById('table1');
             if (clonedTable) {
                 clonedTable.style.margin = '20px';
@@ -244,54 +244,54 @@ function generateImage() {
     
     html2canvas(table, options).then(canvas => {
         try {
-            // Generate image filename with timestamp
+            // タイムスタンプ付きファイル名を生成
             const now = new Date();
             const filename = `race-results-${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}-${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}.png`;
             
-            // Create download link
+            // ダウンロードリンクを作成
             const link = document.createElement('a');
             link.download = filename;
             link.href = canvas.toDataURL('image/png');
             
-            // Execute automatic download
+            // 自動ダウンロードを実行
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             
-            // Restore button state
+            // ボタンの状態を復元
             imageBtn.innerHTML = originalText;
             imageBtn.disabled = false;
             
-            // Success message
+            // 成功メッセージ
             setTimeout(() => {
-                alert('Image saved successfully!\nOpening X post screen...');
-                // Automatically open X post screen
+                alert('画像を保存しました！\nX投稿画面を開きます...');
+                // 自動的にX投稿画面を開く
                 if (currentRaceResults) {
                     postToX();
                 }
             }, 500);
             
         } catch (error) {
-            console.error('Image save error:', error);
+            console.error('画像保存エラー:', error);
             imageBtn.innerHTML = originalText;
             imageBtn.disabled = false;
-            alert('Error occurred while saving image.');
+            alert('画像保存中にエラーが発生しました。');
         }
     }).catch(error => {
-        console.error('html2canvas error:', error);
+        console.error('html2canvasエラー:', error);
         imageBtn.innerHTML = originalText;
         imageBtn.disabled = false;
-        alert('Error occurred while generating image.');
+        alert('画像生成中にエラーが発生しました。');
     });
 }
 
-// Main calculation function
-function calc1(mode, mode2) { // mode: 1=Best Lap, 2=Lap Race; mode2: 1=Include 1st lap, 2=Exclude 1st lap
+// メイン集計関数
+function calc1(mode, mode2) { // mode: 1=ベストラップ, 2=周回レース; mode2: 1=1周目含む, 2=1周目除外
     let titles = [];
     let styles = [];
     let ta = document.getElementById('ta').value;
     if (ta == '') {
-        alert('まずはレース結果データをロードしてください');
+        alert('先にレース結果データを読み込んでください。');
         return;
     }
     ta = ta.replace('\r\n', '\n').trim();
@@ -300,7 +300,7 @@ function calc1(mode, mode2) { // mode: 1=Best Lap, 2=Lap Race; mode2: 1=Include 
         tas[i] = tas[i].split(",");
     }
     
-    console.log('CSV parsing started:', tas); // Debug log
+    console.log('CSV解析開始:', tas); // デバッグログ
     
     let drivers = [];
     let laptimes = [];
@@ -329,16 +329,16 @@ function calc1(mode, mode2) { // mode: 1=Best Lap, 2=Lap Race; mode2: 1=Include 
             }
         }
         
-        // Direct detection of numeric rows (new support)
+        // 数値行の直接検出（新しいサポート）
         if (readFlg == 0 && !isNaN(parseInt(tas[i][0])) && tas[i][1] && !isNaN(parseFloat(tas[i][1]))) {
-            // Auto-create drivers if not set
+            // ドライバーが設定されていない場合は自動作成
             if (drivers.length === 0 || !drivers[0]) {
                 drvStart = 0;
                 drv = 0;
-                // Create drivers for columns with data
+                // データがある列についてドライバーを作成
                 for (let j = 1; j < tas[i].length; ++j) {
                     if (tas[i][j] && !isNaN(parseFloat(tas[i][j]))) {
-                        let driverName = "Driver" + j;
+                        let driverName = "ドライバー" + j;
                         if (sbv == "with") {
                             drivers[drv] = driverName + ' (H:' + ht + ')';
                         } else {
@@ -352,7 +352,7 @@ function calc1(mode, mode2) { // mode: 1=Best Lap, 2=Lap Race; mode2: 1=Include 
                 }
             }
             readFlg = 1;
-            // Process current row too
+            // 現在の行も処理
             drv2 = drvStart;
             for (let j = 1; j < drv - drvStart + 1; ++j) {
                 if (tas[i][j] && !isNaN(parseFloat(tas[i][j]))) {
@@ -381,13 +381,13 @@ function calc1(mode, mode2) { // mode: 1=Best Lap, 2=Lap Race; mode2: 1=Include 
             }
         }
         
-        // Support for cases without "名前" row
+        // 「名前」行なしのケースをサポート
         if (tas[i][0] == "バンド" || (tas[i][0] == "" && i > 0 && tas[i-1][0] == "バンド")) {
             if (tas[i][0] == "バンド") {
                 drvStart = drv;
                 for (let j = 1; j < tas[i].length; ++j) {
                     if (tas[i][j] && tas[i][j].trim() === "") {
-                        let driverName = "Driver" + j;
+                        let driverName = "ドライバー" + j;
                         if (sbv == "with") {
                             drivers[drv] = driverName + ' (H:' + ht + ')';
                         } else {
@@ -404,7 +404,7 @@ function calc1(mode, mode2) { // mode: 1=Best Lap, 2=Lap Race; mode2: 1=Include 
             }
         }
         
-        // Additional support: Direct detection of numeric rows after course row
+        // 追加サポート: コース行の後の数値行の直接検出
         if (tas[i][0] == "コース" && i+2 < tas.length) {
             let nextDataLine = i+2;
             while (nextDataLine < tas.length && (!tas[nextDataLine][1] || isNaN(parseFloat(tas[nextDataLine][1])))) {
@@ -413,8 +413,8 @@ function calc1(mode, mode2) { // mode: 1=Best Lap, 2=Lap Race; mode2: 1=Include 
             if (nextDataLine < tas.length && !isNaN(parseFloat(tas[nextDataLine][1]))) {
                 drvStart = drv;
                 for (let j = 1; j < tas[i].length; ++j) {
-                    if (j < 20) { // Maximum 20 drivers
-                        let driverName = "Driver" + j;
+                    if (j < 20) { // 最大20名まで
+                        let driverName = "ドライバー" + j;
                         if (sbv == "with") {
                             drivers[drv] = driverName + ' (H:' + ht + ')';
                         } else {
@@ -427,7 +427,7 @@ function calc1(mode, mode2) { // mode: 1=Best Lap, 2=Lap Race; mode2: 1=Include 
                     }
                 }
                 if (i+1 < tas.length && (tas[i+1][0] == "" || tas[i+1][0] == "バンド")) {
-                    i++; // Skip next row
+                    i++; // 次の行をスキップ
                 }
             }
         }
@@ -450,11 +450,11 @@ function calc1(mode, mode2) { // mode: 1=Best Lap, 2=Lap Race; mode2: 1=Include 
         }
     }
     
-    console.log('Parsing results:');
-    console.log('Drivers:', drivers);
-    console.log('Lap times:', laptimes);
-    console.log('Rounds:', rds);
-    console.log('Heats:', hts);
+    console.log('解析結果:');
+    console.log('ドライバー:', drivers);
+    console.log('ラップタイム:', laptimes);
+    console.log('ラウンド:', rds);
+    console.log('ヒート:', hts);
     
     let goaltimes = [];
     let results = [];
@@ -469,14 +469,14 @@ function calc1(mode, mode2) { // mode: 1=Best Lap, 2=Lap Race; mode2: 1=Include 
         }
     }
     
-    if (mode == 1) { // Best lap qualifying
-        results = arrSort(results, 1, 9); // 2nd best lap
-        results = arrSort(results, 1, 7); // 1st best lap
-    } else { // Lap race qualifying
-        results = arrSort(results, 1, 9); // 2nd best lap
-        results = arrSort(results, 1, 7); // 1st best lap
-        results = arrSort(results, 1, 5); // Goal time
-        results = arrSort(results, -1, 4); // Lap count
+    if (mode == 1) { // ベストラップ予選
+        results = arrSort(results, 1, 9); // 2番手ベストラップ
+        results = arrSort(results, 1, 7); // 1番手ベストラップ
+    } else { // 周回レース予選
+        results = arrSort(results, 1, 9); // 2番手ベストラップ
+        results = arrSort(results, 1, 7); // 1番手ベストラップ
+        results = arrSort(results, 1, 5); // ゴールタイム
+        results = arrSort(results, -1, 4); // 周回数
     }
     let results2 = removeDuplicates(results);
     arrDisplayTable(results2, mode, mode2, titles.join(' '), styles.join(' '));
@@ -484,14 +484,14 @@ function calc1(mode, mode2) { // mode: 1=Best Lap, 2=Lap Race; mode2: 1=Include 
     window.print();
 }
 
-// Convert milliseconds to minutes:seconds.milliseconds
+// ミリ秒を分:秒.ミリ秒に変換
 function msecToMin(time) {
     if (time == 0) {
         return "";
     }
     let min = Math.floor(time / 60000);
     let sec = (time % 60000) / 1000;
-    if ((time % 1000) == 0) { // Exact seconds
+    if ((time % 1000) == 0) { // ちょうどの秒数
         return min + ":" + sec + ".000";
     }
     if (sec < 10) {
@@ -501,12 +501,12 @@ function msecToMin(time) {
     return min + ":" + sec.slice(0, 6);
 }
 
-// Convert milliseconds to seconds.milliseconds
+// ミリ秒を秒.ミリ秒に変換
 function msecToSec(time) {
     if (time == 0) {
         return "";
     }
-    if ((time % 1000) == 0) { // Exact seconds
+    if ((time % 1000) == 0) { // ちょうどの秒数
         return time/1000 + ".000";
     }
     if (time >= 100000) {
@@ -517,7 +517,7 @@ function msecToSec(time) {
     return time.slice(0, 6);
 }
 
-// Calculate personal results (laps and times)
+// 個人成績の計算（周回数とタイム）
 function totallingPersonal(arr, rd, mode2) {
     let total = 0;
     let total2 = 0;
@@ -557,8 +557,8 @@ function totallingPersonal(arr, rd, mode2) {
     return [laps, total, ave, best1, best1In, best2, best2In];
 }
 
-// Sort array
-function arrSort(arr, order, index) { // arr: 2D array, order: 1=ascending, -1=descending, index: specify 2nd dimension
+// 配列のソート
+function arrSort(arr, order, index) { // arr: 2次元配列, order: 1=昇順, -1=降順, index: 2次元目のインデックスを指定
     arr.sort(function (a, b) {
         let a1 = a[index];
         let b1 = b[index];
@@ -567,7 +567,7 @@ function arrSort(arr, order, index) { // arr: 2D array, order: 1=ascending, -1=d
     return arr;
 }
 
-// Display array in textarea
+// 配列をテキストエリアに表示
 function arrDisplay(arr) {
     let str = [];
     for (let i = 0; i < arr.length; ++i) {
@@ -576,7 +576,7 @@ function arrDisplay(arr) {
     document.getElementById('ta2').value = str.join('\n');
 }
 
-// Remove duplicates
+// 重複を削除
 function removeDuplicates(arr) {
     let results = structuredClone(arr);
     let results2 = [];
@@ -585,12 +585,12 @@ function removeDuplicates(arr) {
     let j = 0;
     for (let i = 0; i < results.length; ++i) {
         if (drivers.includes(results[i][3])) {
-            if (results2[positions[results[i][3]]][11] == '') { // Second occurrence
-                // Laps
+            if (results2[positions[results[i][3]]][11] == '') { // 2回目の出現
+                // 周回数
                 results2[positions[results[i][3]]][11] = results[i][4];
                 results2[positions[results[i][3]]][12] = results[i][5];
                 results2[positions[results[i][3]]][13] = results[i][0];
-                // Best lap
+                // ベストラップ
                 let bests = [];
                 bests.push([results2[positions[results[i][3]]][7], results2[positions[results[i][3]]][8]]);
                 bests.push([results2[positions[results[i][3]]][9], results2[positions[results[i][3]]][10]]);
@@ -602,7 +602,7 @@ function removeDuplicates(arr) {
                 results2[positions[results[i][3]]][9] = bests[1][0];
                 results2[positions[results[i][3]]][10] = bests[1][1];
             }
-        } else { // First occurrence
+        } else { // 初回出現
             results2[j] = results[i];
             results2[j].push('');
             results2[j].push('');
@@ -615,12 +615,12 @@ function removeDuplicates(arr) {
     return results2;
 }
 
-// Global variable to store race results
+// レース結果を保存するグローバル変数
 let currentRaceResults = null;
 
-// Display results in table format
+// 結果をテーブル形式で表示
 function arrDisplayTable(arr, mode, mode2, title, style) {
-    // Save race results
+    // レース結果を保存
     currentRaceResults = {
         data: arr,
         mode: mode,
@@ -636,32 +636,32 @@ function arrDisplayTable(arr, mode, mode2, title, style) {
     str.push('<tr class="title"><td colspan="8"><div align="right">' + strDate + '</div></td></tr>\n');
     str.push('<tr class="title"><td colspan="8"><div align="left"><b><u>' + title + '</u></b></div></td></tr>\n');
     if (mode == 1) {
-        str.push('<tr class="title"><td colspan="8"><div align="left">Best Lap　' + style + ' Start</div></td></tr>\n');
+        str.push('<tr class="title"><td colspan="8"><div align="left">ベストラップ　' + style + ' スタート</div></td></tr>\n');
     } else {
-        str.push('<tr class="title"><td colspan="8"><div align="left">Lap Race　' + style + ' Start</div></td></tr>\n');
+        str.push('<tr class="title"><td colspan="8"><div align="left">周回レース　' + style + ' スタート</div></td></tr>\n');
     }
     str.push('<tr>\n');
     str.push('<th></th>\n');
     str.push('<th></th>\n');
-    str.push('<th colspan="3">1st</th>\n');
-    str.push('<th colspan="3">2nd</th>\n');
+    str.push('<th colspan="3">1位</th>\n');
+    str.push('<th colspan="3">2位</th>\n');
     str.push('</tr>\n');
     str.push('<tr>\n');
-    str.push('<th>Pos.</th>\n');
-    str.push('<th>Name</th>\n');
+    str.push('<th>順位</th>\n');
+    str.push('<th>名前</th>\n');
     if (mode == 1) {
-        str.push('<th>Best</th>\n');
+        str.push('<th>ベスト</th>\n');
         str.push('<th>Rd</th>\n');
-        str.push('<th>Lap</th>\n');
-        str.push('<th>Best</th>\n');
+        str.push('<th>周</th>\n');
+        str.push('<th>ベスト</th>\n');
         str.push('<th>Rd</th>\n');
-        str.push('<th>Lap</th>\n');
+        str.push('<th>周</th>\n');
     } else {
-        str.push('<th>Laps</th>\n');
-        str.push('<th>Goal Time</th>\n');
+        str.push('<th>周回</th>\n');
+        str.push('<th>ゴールタイム</th>\n');
         str.push('<th>Rd.</th>\n');
-        str.push('<th>Laps</th>\n');
-        str.push('<th>Goal Time</th>\n');
+        str.push('<th>周回</th>\n');
+        str.push('<th>ゴールタイム</th>\n');
         str.push('<th>Rd.</th>\n');
     }
     str.push('</tr>\n');
@@ -714,18 +714,17 @@ function arrDisplayTable(arr, mode, mode2, title, style) {
     str.push('</table>\n');
     document.getElementById('table1').innerHTML = str.join('');
     
-    // Show X post button
+    // X投稿ボタンを表示
     const postBtn = document.getElementById('postToXBtn');
     if (postBtn) {
         postBtn.style.display = 'inline-block';
         postBtn.className = 'btn-success x-post';
     }
     
-    // Show image save button
+    // 画像保存ボタンを表示
     const imageBtn = document.getElementById('generateImageBtn');
     if (imageBtn) {
         imageBtn.style.display = 'inline-block';
         imageBtn.className = 'btn-success';
     }
-
 }
