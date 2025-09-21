@@ -291,7 +291,7 @@ function calc1(mode, mode2) { // mode: 1=Best Lap, 2=Lap Race; mode2: 1=Include 
     let styles = [];
     let ta = document.getElementById('ta').value;
     if (ta == '') {
-        alert('Please load race result data first.');
+        alert('まずはレース結果データをロードしてください');
         return;
     }
     ta = ta.replace('\r\n', '\n').trim();
@@ -727,4 +727,5 @@ function arrDisplayTable(arr, mode, mode2, title, style) {
         imageBtn.style.display = 'inline-block';
         imageBtn.className = 'btn-success';
     }
+
 }
