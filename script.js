@@ -291,7 +291,7 @@ function calc1(mode, mode2) { // mode: 1=ベストラップ, 2=周回レース; 
     let styles = [];
     let ta = document.getElementById('ta').value;
     if (ta == '') {
-        alert('先にレース結果データを読み込んでください。');
+        alert('先にレース結果データを読み込んでください！');
         return;
     }
     ta = ta.replace('\r\n', '\n').trim();
@@ -728,3 +728,4 @@ function arrDisplayTable(arr, mode, mode2, title, style) {
         imageBtn.className = 'btn-success';
     }
 }
+
